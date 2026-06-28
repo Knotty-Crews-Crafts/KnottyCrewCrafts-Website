@@ -19,11 +19,23 @@ document.addEventListener("DOMContentLoaded", function () {
 	var searchQuery = "";
 
 	function getSelectionLabel(imagePath, imageTitle) {
-		return imageTitle + " (" + imagePath + ")";
+		return imageTitle + " - " + getAbsoluteImageUrl(imagePath);
 	}
 
 	function getSelectionKey(imagePath, imageTitle) {
 		return (imageTitle || "Image") + "::" + (imagePath || "");
+	}
+
+	function getAbsoluteImageUrl(imagePath) {
+		if (!imagePath) {
+			return "";
+		}
+
+		try {
+			return new URL(imagePath, window.location.href).href;
+		} catch (error) {
+			return imagePath;
+		}
 	}
 
 	function updateAddButtonsState() {
@@ -183,7 +195,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			return getSelectionLabel(item.path, item.title);
 		}).join("\n");
 		preview.innerHTML = selectedImages.map(function (item) {
-			return "<div>" + getSelectionLabel(item.path, item.title) + "</div>";
+			var absoluteImageUrl = getAbsoluteImageUrl(item.path);
+			return "<div><strong>" + item.title + "</strong><br><a href=\"" + absoluteImageUrl + "\" target=\"_blank\" rel=\"noopener\">" + absoluteImageUrl + "</a></div>";
 		}).join("");
 	}
 
@@ -211,14 +224,17 @@ document.addEventListener("DOMContentLoaded", function () {
 	async function attachSelectedImagesToFormData(formData) {
 		for (var index = 0; index < selectedImages.length; index += 1) {
 			var selectedImage = selectedImages[index];
+			var absoluteImageUrl = getAbsoluteImageUrl(selectedImage.path);
 
-			if (!selectedImage.path) {
+			if (!absoluteImageUrl) {
 				continue;
 			}
 
-			var response = await fetch(selectedImage.path);
+			formData.append("Selected image URL " + (index + 1), absoluteImageUrl);
+
+			var response = await fetch(absoluteImageUrl);
 			if (!response.ok) {
-				throw new Error("Failed to fetch selected image: " + selectedImage.path);
+				throw new Error("Failed to fetch selected image: " + absoluteImageUrl);
 			}
 
 			var imageBlob = await response.blob();
