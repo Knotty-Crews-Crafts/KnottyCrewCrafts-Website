@@ -2,7 +2,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	var addButtons = document.querySelectorAll(".add-to-form-btn");
 	var hiddenInput = document.getElementById("selectedImagesInput");
 	var preview = document.getElementById("selectedImagesPreview");
+	var orderForm = document.querySelector("#orders form");
 	var selectedImages = [];
+	var isSubmittingForm = false;
 	var openGalleryModalBtn = document.getElementById("openGalleryModalBtn");
 	var closeGalleryModalBtn = document.getElementById("closeGalleryModalBtn");
 	var galleryModal = document.getElementById("galleryModal");
@@ -20,13 +22,20 @@ document.addEventListener("DOMContentLoaded", function () {
 		return imageTitle + " (" + imagePath + ")";
 	}
 
+	function getSelectionKey(imagePath, imageTitle) {
+		return (imageTitle || "Image") + "::" + (imagePath || "");
+	}
+
 	function updateAddButtonsState() {
 		document.querySelectorAll(".add-to-form-btn").forEach(function (button) {
 			var imagePath = button.getAttribute("data-image") || "";
 			var imageTitle = button.getAttribute("data-title") || "Image";
-			var selection = getSelectionLabel(imagePath, imageTitle);
+			var selectionKey = getSelectionKey(imagePath, imageTitle);
+			var isSelected = selectedImages.some(function (item) {
+				return item.key === selectionKey;
+			});
 
-			if (selectedImages.indexOf(selection) !== -1) {
+			if (isSelected) {
 				button.textContent = "Added";
 				button.disabled = true;
 			} else {
@@ -142,10 +151,17 @@ document.addEventListener("DOMContentLoaded", function () {
 		button.addEventListener("click", function () {
 			var imagePath = button.getAttribute("data-image") || "";
 			var imageTitle = button.getAttribute("data-title") || "Image";
-			var selection = getSelectionLabel(imagePath, imageTitle);
+			var selectionKey = getSelectionKey(imagePath, imageTitle);
+			var alreadySelected = selectedImages.some(function (item) {
+				return item.key === selectionKey;
+			});
 
-			if (selectedImages.indexOf(selection) === -1) {
-				selectedImages.push(selection);
+			if (!alreadySelected) {
+				selectedImages.push({
+					key: selectionKey,
+					path: imagePath,
+					title: imageTitle
+				});
 				renderSelectedImages();
 				updateAddButtonsState();
 			}
@@ -163,10 +179,104 @@ document.addEventListener("DOMContentLoaded", function () {
 			return;
 		}
 
-		hiddenInput.value = selectedImages.join("\n");
+		hiddenInput.value = selectedImages.map(function (item) {
+			return getSelectionLabel(item.path, item.title);
+		}).join("\n");
 		preview.innerHTML = selectedImages.map(function (item) {
-			return "<div>" + item + "</div>";
+			return "<div>" + getSelectionLabel(item.path, item.title) + "</div>";
 		}).join("");
+	}
+
+	function getFileNameFromSelection(item, index, blobType) {
+		var extensionFromPath = "";
+		var pathParts = (item.path || "").split(".");
+		if (pathParts.length > 1) {
+			extensionFromPath = pathParts[pathParts.length - 1].split(/[?#]/)[0].toLowerCase();
+		}
+
+		var extensionFromType = "";
+		if (blobType && blobType.indexOf("/") !== -1) {
+			extensionFromType = blobType.split("/")[1].toLowerCase();
+		}
+
+		var extension = extensionFromPath || extensionFromType || "jpg";
+		if (extension === "jpeg") {
+			extension = "jpg";
+		}
+
+		var safeBaseName = toSlug(item.title) || "gallery-image";
+		return safeBaseName + "-" + (index + 1) + "." + extension;
+	}
+
+	async function attachSelectedImagesToFormData(formData) {
+		for (var index = 0; index < selectedImages.length; index += 1) {
+			var selectedImage = selectedImages[index];
+
+			if (!selectedImage.path) {
+				continue;
+			}
+
+			var response = await fetch(selectedImage.path);
+			if (!response.ok) {
+				throw new Error("Failed to fetch selected image: " + selectedImage.path);
+			}
+
+			var imageBlob = await response.blob();
+			var fileName = getFileNameFromSelection(selectedImage, index, imageBlob.type);
+
+			formData.append("attachment", imageBlob, fileName);
+		}
+	}
+
+	if (orderForm) {
+		orderForm.addEventListener("submit", async function (event) {
+			event.preventDefault();
+
+			if (isSubmittingForm) {
+				return;
+			}
+
+			isSubmittingForm = true;
+			var submitButton = orderForm.querySelector("button[type='submit']");
+			var originalButtonText = submitButton ? submitButton.textContent : "";
+
+			if (submitButton) {
+				submitButton.disabled = true;
+				submitButton.textContent = "Sending...";
+			}
+
+			try {
+				var formData = new FormData(orderForm);
+				formData.set("Selected gallery images", hiddenInput ? hiddenInput.value : "");
+				await attachSelectedImagesToFormData(formData);
+
+				var submitResponse = await fetch(orderForm.action, {
+					method: "POST",
+					body: formData,
+					headers: {
+						Accept: "application/json"
+					}
+				});
+
+				if (!submitResponse.ok) {
+					throw new Error("Form submission failed.");
+				}
+
+				orderForm.reset();
+				selectedImages = [];
+				renderSelectedImages();
+				updateAddButtonsState();
+				window.alert("Order enquiry sent successfully.");
+			} catch (error) {
+				window.alert("Unable to send the enquiry with image files right now. Please try again.");
+			} finally {
+				isSubmittingForm = false;
+				if (submitButton) {
+					submitButton.disabled = false;
+					submitButton.textContent = originalButtonText;
+				}
+			}
+		});
 	}
 
 	addButtons.forEach(function (button) {
