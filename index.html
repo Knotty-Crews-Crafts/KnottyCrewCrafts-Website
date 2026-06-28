@@ -36,15 +36,32 @@
 <h2>Gallery</h2>
 <p>Replace these sample images with your own crochet, cross stitch and assorted craft photos.</p>
 <div class="gallery">
-<div><img src="assets/logo.png"><h3>Crochet Gifts</h3></div>
-<div><img src="assets/flyer.png"><h3>Cross Stitch</h3></div>
-<div><img src="assets/branding.png"><h3>Assorted Craft</h3></div>
+<div><img src="assets/logo.png" alt="Crochet Gifts"><h3>Crochet Gifts</h3><button type="button" class="add-to-form-btn" data-image="assets/logo.png" data-title="Crochet Gifts">Add to Form</button></div>
+<div><img src="assets/flyer.png" alt="Cross Stitch"><h3>Cross Stitch</h3><button type="button" class="add-to-form-btn" data-image="assets/flyer.png" data-title="Cross Stitch">Add to Form</button></div>
+<div><img src="assets/branding.png" alt="Assorted Craft"><h3>Assorted Craft</h3><button type="button" class="add-to-form-btn" data-image="assets/branding.png" data-title="Assorted Craft">Add to Form</button></div>
+</div>
+<div class="gallery-actions">
+<button type="button" id="openGalleryModalBtn">View Entire Gallery</button>
 </div>
 </section>
 
+<div id="galleryModal" class="gallery-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="galleryModalTitle">
+<div class="gallery-modal-content">
+<button type="button" class="gallery-modal-close" id="closeGalleryModalBtn" aria-label="Close gallery">&times;</button>
+<h2 id="galleryModalTitle">Entire Gallery</h2>
+<div class="gallery-modal-tools">
+<label for="galleryModalSearch">Search gallery</label>
+<input type="search" id="galleryModalSearch" placeholder="Search by name or type">
+<div class="gallery-modal-filters" id="galleryModalFilters" role="group" aria-label="Filter gallery"></div>
+<p id="galleryModalResults" class="gallery-modal-results" aria-live="polite"></p>
+</div>
+<div class="gallery-modal-grid" id="galleryModalGrid"></div>
+<p id="galleryModalEmpty" class="gallery-modal-empty" hidden>No matching items. Try a different search or filter.</p>
+</div>
+</div>
+
 <section id="orders">
 <h2>Online Order Enquiry</h2>
-<p>This form opens your email app and sends the request to <b>Knotty.Crews.Crafts@gmail.com</b>.</p>
     <form action="https://formsubmit.co/knotty.crews.crafts@gmail.com" method="post">
         <label>Your Name<input name="Name" required></label>
         <label>Your Email<input type="email" name="Email" required></label>
@@ -52,6 +69,10 @@
         <label>Type of Order<select name="Order type"><option>Crochet</option><option>Cross Stitch</option><option>Assorted Craft</option><option>Not sure yet</option></select></label>
         <label>What would you like made?<textarea name="Order details" rows="6" required></textarea></label>
         <label>Preferred date needed by<input type="date" name="Date needed"></label>
+        <input type="hidden" name="Selected gallery images" id="selectedImagesInput">
+        <label>Selected Gallery Images
+            <div id="selectedImagesPreview" class="selected-images-preview">No images selected yet.</div>
+        </label>
         <button type="submit">Send Order Enquiry</button>
     </form>
 </section>
@@ -70,4 +91,5 @@
 
 <footer>Knottycrewscrafts.co.uk | Knotty.Crews.Crafts@gmail.com | The Knotty Crew and Crafts</footer>
 </body>
+<script src="gallery.js"></script>
 </html>
