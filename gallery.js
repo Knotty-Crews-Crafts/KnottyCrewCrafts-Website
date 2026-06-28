@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	var galleryModalFilters = document.getElementById("galleryModalFilters");
 	var galleryModalResults = document.getElementById("galleryModalResults");
 	var galleryModalEmpty = document.getElementById("galleryModalEmpty");
+	var galleryModalData = document.getElementById("galleryModalData");
 	var pageGalleryItems = document.querySelectorAll("#gallery .gallery > div");
 	var modalGalleryItems = [];
 	var activeFilter = "all";
@@ -300,25 +301,50 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	if (galleryModal && galleryModalGrid) {
-		pageGalleryItems.forEach(function (item) {
-			var image = item.querySelector("img");
-			var title = item.querySelector("h3");
+		if (galleryModalData) {
+			galleryModalData.querySelectorAll("[data-image]").forEach(function (item) {
+				var imagePath = item.getAttribute("data-image") || "";
+				if (!imagePath) {
+					return;
+				}
 
-			if (!image) {
-				return;
-			}
+				var titleText = item.getAttribute("data-title") || "Craft";
+				var altText = item.getAttribute("data-alt") || titleText || "Gallery image";
+				var categoryLabel = item.getAttribute("data-category") || titleText;
+				var category = toSlug(categoryLabel) || "other";
 
-			var titleText = title ? title.textContent : "Craft";
-			var category = toSlug(titleText) || "other";
-			modalGalleryItems.push({
-				imagePath: image.getAttribute("src") || "",
-				altText: image.getAttribute("alt") || "Gallery image",
-				title: titleText,
-				category: category,
-				categoryLabel: titleText,
-				searchText: (titleText + " " + (image.getAttribute("alt") || "")).toLowerCase()
+				modalGalleryItems.push({
+					imagePath: imagePath,
+					altText: altText,
+					title: titleText,
+					category: category,
+					categoryLabel: categoryLabel,
+					searchText: (titleText + " " + altText + " " + categoryLabel).toLowerCase()
+				});
 			});
-		});
+		}
+
+		if (modalGalleryItems.length === 0) {
+			pageGalleryItems.forEach(function (item) {
+				var image = item.querySelector("img");
+				var title = item.querySelector("h3");
+
+				if (!image) {
+					return;
+				}
+
+				var titleText = title ? title.textContent : "Craft";
+				var category = toSlug(titleText) || "other";
+				modalGalleryItems.push({
+					imagePath: image.getAttribute("src") || "",
+					altText: image.getAttribute("alt") || "Gallery image",
+					title: titleText,
+					category: category,
+					categoryLabel: titleText,
+					searchText: (titleText + " " + (image.getAttribute("alt") || "")).toLowerCase()
+				});
+			});
+		}
 
 		buildFilterButtons();
 		renderModalGallery();
