@@ -246,52 +246,16 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	if (orderForm) {
-		orderForm.addEventListener("submit", async function (event) {
-			event.preventDefault();
-
+		orderForm.addEventListener("submit", function () {
 			if (isSubmittingForm) {
 				return;
 			}
 
 			isSubmittingForm = true;
 			var submitButton = orderForm.querySelector("button[type='submit']");
-			var originalButtonText = submitButton ? submitButton.textContent : "";
-
 			if (submitButton) {
 				submitButton.disabled = true;
 				submitButton.textContent = "Sending...";
-			}
-
-			try {
-				var formData = new FormData(orderForm);
-				formData.set("Selected gallery images", hiddenInput ? hiddenInput.value : "");
-				await attachSelectedImagesToFormData(formData);
-
-				var submitResponse = await fetch(orderForm.action, {
-					method: "POST",
-					body: formData,
-					headers: {
-						Accept: "application/json"
-					}
-				});
-
-				if (!submitResponse.ok) {
-					throw new Error("Form submission failed.");
-				}
-
-				orderForm.reset();
-				selectedImages = [];
-				renderSelectedImages();
-				updateAddButtonsState();
-				window.alert("Order enquiry sent successfully.");
-			} catch (error) {
-				window.alert("Unable to send the enquiry with image files right now. Please try again.");
-			} finally {
-				isSubmittingForm = false;
-				if (submitButton) {
-					submitButton.disabled = false;
-					submitButton.textContent = originalButtonText;
-				}
 			}
 		});
 	}
