@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function () {
 	var galleryModalEmpty = document.getElementById("galleryModalEmpty");
 	var galleryModalData = document.getElementById("galleryModalData");
 	var pageGalleryItems = document.querySelectorAll("#gallery .gallery > div");
+	var imageLightbox = document.getElementById("imageLightbox");
+	var imageLightboxImg = document.getElementById("imageLightboxImg");
+	var imageLightboxCaption = document.getElementById("imageLightboxCaption");
+	var closeImageLightboxBtn = document.getElementById("closeImageLightboxBtn");
 	var modalGalleryItems = [];
 	var activeFilter = "all";
 	var searchQuery = "";
@@ -131,6 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			var modalImage = document.createElement("img");
 			modalImage.src = item.imagePath;
 			modalImage.alt = item.altText;
+			bindImageLightbox(modalImage, item.title);
 
 			var modalTitle = document.createElement("h3");
 			modalTitle.textContent = item.title;
@@ -321,6 +326,68 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	}
 
+	function openImageLightbox(imageSrc, imageAlt, captionText) {
+		if (!imageLightbox || !imageLightboxImg) {
+			return;
+		}
+
+		imageLightboxImg.src = imageSrc;
+		imageLightboxImg.alt = imageAlt || captionText || "Full size image";
+		if (imageLightboxCaption) {
+			imageLightboxCaption.textContent = captionText || "";
+		}
+
+		imageLightbox.classList.add("is-open");
+		imageLightbox.setAttribute("aria-hidden", "false");
+		document.body.style.overflow = "hidden";
+	}
+
+	function closeImageLightbox() {
+		if (!imageLightbox) {
+			return;
+		}
+
+		imageLightbox.classList.remove("is-open");
+		imageLightbox.setAttribute("aria-hidden", "true");
+		document.body.style.overflow = "";
+
+		imageLightbox.addEventListener("transitionend", function clearImageSrc(event) {
+			if (event.target !== imageLightbox) {
+				return;
+			}
+			imageLightbox.removeEventListener("transitionend", clearImageSrc);
+			if (imageLightboxImg && !imageLightbox.classList.contains("is-open")) {
+				imageLightboxImg.src = "";
+			}
+		});
+	}
+
+	function bindImageLightbox(imageElement, captionText) {
+		imageElement.addEventListener("click", function () {
+			openImageLightbox(imageElement.getAttribute("src") || "", imageElement.getAttribute("alt") || "", captionText);
+		});
+	}
+
+	if (closeImageLightboxBtn) {
+		closeImageLightboxBtn.addEventListener("click", closeImageLightbox);
+	}
+
+	if (imageLightbox) {
+		imageLightbox.addEventListener("click", function (event) {
+			if (event.target === imageLightbox) {
+				closeImageLightbox();
+			}
+		});
+	}
+
+	pageGalleryItems.forEach(function (item) {
+		var image = item.querySelector("img");
+		var title = item.querySelector("h3");
+		if (image) {
+			bindImageLightbox(image, title ? title.textContent : "");
+		}
+	});
+
 	function openGalleryModal() {
 		if (!galleryModal) {
 			return;
@@ -362,6 +429,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	document.addEventListener("keydown", function (event) {
+		if (event.key === "Escape" && imageLightbox && imageLightbox.classList.contains("is-open")) {
+			closeImageLightbox();
+			return;
+		}
+
 		if (event.key === "Escape" && galleryModal && galleryModal.classList.contains("is-open")) {
 			closeGalleryModal();
 		}

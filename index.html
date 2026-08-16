@@ -37,7 +37,7 @@
 <p>Replace these sample images with your own crochet, cross stitch and assorted craft photos.</p>
 <div class="gallery">
 <div><img src="assets/Gallery/Crab.jpeg" alt="Crab"><h3>Crab</h3><button type="button" class="add-to-form-btn" data-image="assets/Gallery/Crab.jpeg" data-title="Crab">Add to Form</button></div>
-<div><img src="assets/Gallery/2 Turtles.JPG" alt="2 Turtles"><h3>2 Turtles</h3><button type="button" class="add-to-form-btn" data-image="assets/Gallery/2 Turtles.JPG" data-title="2 Turtles">Add to Form</button></div>
+<div><img src="assets/Gallery/Turtles.JPG" alt="2 Turtles"><h3>Turtles</h3><button type="button" class="add-to-form-btn" data-image="assets/Gallery/2 Turtles.JPG" data-title="2 Turtles">Add to Form</button></div>
 <div><img src="assets/Gallery/Teddy Bear.JPG" alt="Teddy Bear"><h3>Teddy Bear</h3><button type="button" class="add-to-form-btn" data-image="assets/Gallery/Teddy Bear.JPG" data-title="Teddy Bear">Add to Form</button></div>
 </div>
 <div class="gallery-actions">
@@ -46,19 +46,25 @@
 
 <div id="galleryModalData" hidden>
 
-<div data-image="assets/Gallery/2 Turtles.JPG" data-title="2 Turtles" data-alt="2 Turtles" data-category="Crochet"></div>
-<div data-image="assets/Gallery/1 Stingray.jpeg" data-title="1 Stingray" data-alt="1 Stingray" data-category="Crochet"></div>
-<div data-image="assets/Gallery/Octopus.JPG" data-title="Octopus" data-alt="Octopus" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Turtles.JPG" data-title="Turtles" data-alt="Turtles" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Stingray.jpeg" data-title="Stingray" data-alt="Stingray" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Jellyfish.JPG" data-title="Octopus" data-alt="Octopus" data-category="Crochet"></div>
 <div data-image="assets/Gallery/Crab.jpeg" data-title="Crab" data-alt="Crab" data-category="Crochet"></div>
 <div data-image="assets/Gallery/Teddy Bear.JPG" data-title="Teddy Bear" data-alt="Teddy Bear" data-category="Crochet"></div>
 <div data-image="assets/Gallery/Cardigan.JPG" data-title="Cardigan" data-alt="Cardigen" data-category="Crochet"></div>
+
+<div data-image="assets/Gallery/Doctor Bear.JPG" data-title="Doctor Bear" data-alt="Doctor Bear" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Elephant.JPG" data-title="Elephant" data-alt="Elephant" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Owl.JPG" data-title="Owl" data-alt="Owl" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Pumpkin.JPG" data-title="Pumpkin" data-alt="Pumpkin" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Snail.JPG" data-title="Snail" data-alt="Snail" data-category="Crochet"></div>
 
 <div data-image="assets/Gallery/Football Key Chain.JPG" data-title="Football Key Chain" data-alt="Football Key Chain" data-category="Crochet"></div>
 <div data-image="assets/Gallery/Killer Whale.jpeg" data-title="Killer Whale" data-alt="Killer Whale" data-category="Crochet"></div>
 <div data-image="assets/Gallery/Space Key Chain.JPG" data-title="Space Key Chain" data-alt="Space Key Chain" data-category="Crochet"></div>
 <div data-image="assets/Gallery/Flower Bookmark.JPG" data-title="Flower Bookmark" data-alt="Flower Bookmark" data-category="Crochet"></div>
 <div data-image="assets/Gallery/Xmas Centre Piece.jpeg" data-title="Christmas Centre Piece" data-alt="" data-category="Seasonal"></div>
-<div data-image="assets/Gallery/3 Stingrays.jpeg" data-title="3 Stingrays" data-alt="3 Different Stingray Colours" data-category="Crochet"></div>
+<div data-image="assets/Gallery/Stingrays (Various Colours).jpeg" data-title="Stingrays (Various Colours)" data-alt="Stingrays Various Colours" data-category="Crochet"></div>
 
 
 
@@ -80,6 +86,12 @@
 </div>
 </div>
 
+<div id="imageLightbox" class="image-lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Full size image">
+<button type="button" class="image-lightbox-close" id="closeImageLightboxBtn" aria-label="Close image">&times;</button>
+<img id="imageLightboxImg" src="" alt="">
+<p id="imageLightboxCaption" class="image-lightbox-caption"></p>
+</div>
+
 <section id="orders">
 <h2>Online Order Enquiry</h2>
     <form action="https://formsubmit.co/knotty.crews.crafts@gmail.com" method="post">
@@ -87,7 +99,7 @@
         <label>Your Email<input type="email" name="Email" required></label>
         <label>Phone Number<input name="Phone"></label>
         <label>Type of Order<select name="Order type"><option>Crochet</option><option>Cross Stitch</option><option>Assorted Craft</option><option>Not sure yet</option></select></label>
-        <label>What would you like made?<textarea name="Order details" rows="6" required></textarea></label>
+        <label>What would you like made?<textarea name="Order details" rows="6" placeholder="Add your requirements (e.g. Colours)" required></textarea></label>
         <label>Preferred date needed by<input type="date" name="Date needed"></label>
         <input type="hidden" name="Selected gallery images" id="selectedImagesInput">
         <label>Selected Gallery Images
